@@ -33,8 +33,7 @@ const Register = () => {
                 console.log("this is the token:", token)
                 localStorage.setItem("token", token)
             } 
-            
-            const createUser
+
             
             return response;
             
