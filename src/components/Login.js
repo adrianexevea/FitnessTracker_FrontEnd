@@ -4,47 +4,57 @@ import ReactDOM from 'react-dom';
 const BASE_URL = 'http://fitnesstrac-kr.herokuapp.com/api';
 const locallySourcedToken = localStorage.getItem('token');
 
-const LoginForm = () => {
-    
+const Login = () => {
     
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
+    const loginUser = async (usernameInput, passwordInput) => {
     
+        try {
+            const request = await fetch(`${BASE_URL}/users/login`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                        
+                        username: usernameInput,
+                        password: passwordInput,
+                    
+                })
+            })
+            const response = await request.json();
+            console.log('this is the response:', response)
+    
+            if (!response['error']) {
+                const token = response["token"]
+                console.log("this is the token:", token)
+                localStorage.setItem("token", token)
+            }
+            else{
+                window.alert(response["error"])
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const loginUser = async (usernameInput, passwordInput) => {
-        
-            try {
-                const response = await fetch(`${BASE_URL}/users/login`, {
-                    method: "POST",
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                         
-                            username: usernameInput,
-                            password: passwordInput,
-                        
-                    })
-                })
-                console.log('this is the response:', response)
-        
-                if (response) {
-                    const  { token }  = await response.json();
-                    console.log("this is the token:", token)
-                    localStorage.setItem("token", token)
-                    
-                }
-            } catch (err) {
-                console.log(err);
-            }
-        }
+
         loginUser(username, password)
-        setUsername('');
-        setPassword('');
-    }
+        .then(function(response){
+            if(response){
+                setUsername('');
+                setPassword('');
+            }
+            else {
+                window.location.reload();
+            };
+        });
+    };
         
         
     
@@ -64,4 +74,4 @@ const LoginForm = () => {
     )
 }
 
-export default LoginForm;
+export default Login;

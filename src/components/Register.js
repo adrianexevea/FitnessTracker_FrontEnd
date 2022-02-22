@@ -9,36 +9,41 @@ const Register = () => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        console.log('this is the handle submit');
 
-        const createUser = async (username, password) => {
-            console.log('These are the arguments', username, password)
-            const response = await fetch('http://fitnesstrac-kr.herokuapp.com/api/users/register', {
+    const createUser = async (username, password) => {
+        try {
+            const request = await fetch('http://fitnesstrac-kr.herokuapp.com/api/users/register', {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                     
+                    
                         username: username,
                         password: password,
                     
                 })
             });
-            console.log('This is the response', response);
-            if (response) {
-                const  { token }  = await response.json();
-                console.log("this is the token:", token)
+            const response = await request.json();
+
+            if (!response['error']) {
+                const token = response["token"]
                 localStorage.setItem("token", token)
             } 
-
-            
-            return response;
-            
+            else{
+                window.alert(response["error"])
+            }
+        } catch (error) {
+            window.alert(error)
         }
         
+        return request;
+        
+    }
+
+    const handleSubmit = async (event) => {
+
+        event.preventDefault();
         createUser(username, password)
         setUsername('');
         setPassword('');
